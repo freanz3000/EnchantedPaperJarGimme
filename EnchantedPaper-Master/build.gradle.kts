@@ -7,12 +7,14 @@ plugins {
 }
 
 repositories {
+    mavenCentral()
     maven {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
-    maven {
-        url = uri("https://repo.velocitypowered.com/snapshots/")
-    }
+    // repo.velocitypowered.com is blocked in this environment
+    // maven {
+    //     url = uri("https://repo.velocitypowered.com/snapshots/")
+    // }
 }
 
 dependencies {
@@ -22,9 +24,13 @@ dependencies {
     implementation("org.yaml:snakeyaml:1.33")
     implementation("io.netty:netty-all:4.1.87.Final")
     implementation("se.llbit:jo-nbt:1.3.0")
-    compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
-    compileOnly("com.velocitypowered:velocity-api:3.0.1")
-    annotationProcessor("com.velocitypowered:velocity-api:3.0.1")
+    compileOnly("net.md-5:bungeecord-api:1.16-R0.4") {
+        // Exclude transitive dependencies that require blocked repositories
+        exclude(group = "net.md-5", module = "brigadier")
+    }
+    // Velocity API requires blocked repo.velocitypowered.com, commenting out for now
+    // compileOnly("com.velocitypowered:velocity-api:3.0.1")
+    // annotationProcessor("com.velocitypowered:velocity-api:3.0.1")
 }
 
 tasks.jar {
