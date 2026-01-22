@@ -1,0 +1,30 @@
+name: Generate Jars
+on: [ push, pull_request ]
+jobs:
+  paperclip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2.5.0
+        with:
+          java-version: '17'
+          cache: 'gradle'
+          distribution: 'temurin'
+      - name: Configure Git User Details
+        run: git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
+      - name: Apply Patches
+        run: ./gradlew applyPatches --stacktrace
+      - name: Build Paperclip jar
+        run: ./gradlew shadowjar createReobfPaperclipJar --stacktrace
+      - name: Upload Paperclip jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: enchantedpaper.jar
+          path: build/libs/enchantedpaper-paperclip-*-reobf.jar
+      - name: Upload EnchantedPaper-Master jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: enchantedpaper-master.jar
+          path: EnchantedPaper-Master/build/libs/enchantedpaper-master*.jar
